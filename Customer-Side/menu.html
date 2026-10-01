@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Menu & Pricing | ABC's Restaurant</title>
+
+    <link rel="stylesheet" href="menu.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+
+            <div class="logo">
+                <a href="home.html">ABC's</a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="orders.html">My Orders</a></li>
+                <li><a href="reservation.html">Reservation</a></li>
+            </ul>
+
+            <a href="menu.html" class="order-btn">
+                Order Now
+            </a>
+
+        </nav>
+    </header>
+
+
+    <!-- Menu Header -->
+    <section class="menu-header">
+
+        <p class="section-label">OUR MENU</p>
+
+        <h1>Delicious Food, Made For You</h1>
+
+        <p>
+            Explore our selection of delicious meals and choose
+            your favorite.
+        </p>
+
+    </section>
+
+
+    <!-- Menu Section -->
+    <main class="menu-container">
+
+        <!-- Food Item -->
+        <div class="food-card">
+
+            <div class="food-image">
+                <img src="images/chicken-alfredo.png" alt="Chicken Alfredo">
+            </div>
+
+            <div class="food-info">
+
+                <h2>Chicken Alfredo</h2>
+
+                <p>
+                    Creamy Alfredo pasta served with tender grilled chicken.
+                </p>
+
+                <div class="food-bottom">
+                    <span class="price">₦8,500</span>
+
+                    <button class="add-btn" data-name="Chicken Alfredo" data-price="8500">
+                        Add to Order
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Food Item -->
+        <div class="food-card">
+
+            <div class="food-image">
+                <img src="images/jollof-rice.png" alt="Jollof Rice">
+            </div>
+
+            <div class="food-info">
+
+                <h2>Jollof Rice</h2>
+
+                <p>
+                    Delicious Nigerian jollof rice served with grilled chicken.
+                </p>
+
+                <div class="food-bottom">
+                    <span class="price">₦6,000</span>
+
+                    <button class="add-btn" data-name="Jollof Rice" data-price="6000">
+                        Add to Order
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Food Item -->
+        <div class="food-card">
+
+            <div class="food-image">
+                <img src="images/chicken-burger.png" alt="Chicken Burger">
+            </div>
+
+            <div class="food-info">
+
+                <h2>Chicken Burger</h2>
+
+                <p>
+                    Crispy chicken, fresh vegetables and our special sauce.
+                </p>
+
+                <div class="food-bottom">
+                    <span class="price">₦5,500</span>
+
+                    <button class="add-btn" data-name="Chicken Burger" data-price="5500">
+                        Add to Order
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Food Item -->
+        <div class="food-card">
+
+            <div class="food-image">
+                <img src="images/grilled-chicken.png" alt="Grilled Chicken">
+            </div>
+
+            <div class="food-info">
+
+                <h2>Grilled Chicken</h2>
+
+                <p>
+                    Juicy grilled chicken served with vegetables and fries.
+                </p>
+
+                <div class="food-bottom">
+                    <span class="price">₦7,500</span>
+
+                    <button class="add-btn" data-name="Grilled Chicken" data-price="7500">
+                        Add to Order
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ABC's Restaurant. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const addButtons = document.querySelectorAll(".add-btn");
+        let orders = JSON.parse(localStorage.getItem("orders")) || [];
+        addButtons.forEach(function (button) {
+            const foodName = button.dataset.name;
+            const foodPrice = button.dataset.price;
+
+            // Check if the food is already in the order
+            const alreadyAdded = orders.some(function (order) {
+                return order.name === foodName;
+            });
+
+            if (alreadyAdded) {
+                button.textContent = "Remove from Order";
+                button.style.backgroundColor = "#ff7700";
+            }
+
+            button.addEventListener("click", function () {
+                const existingIndex = orders.findIndex(function (order) {
+                    return order.name === foodName;
+                });
+
+                if (existingIndex === -1) {
+
+                    // Add food
+                    orders.push({
+                        name: foodName,
+                        price: foodPrice
+                    });
+                    button.textContent = "Remove from Order";
+                    button.style.backgroundColor = "#ff7700";
+                } else {
+
+                    // Remove food
+                    orders.splice(existingIndex, 1);
+                    button.textContent = "Add to Order";
+                    button.style.backgroundColor = "#222222";
+                }
+
+                localStorage.setItem("orders", JSON.stringify(orders));
+            });
+        });
+    </script>
+
+</body>
+
+</html>

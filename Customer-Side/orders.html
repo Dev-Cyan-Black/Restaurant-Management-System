@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders | ABC's Restaurant</title>
+
+    <link rel="stylesheet" href="orders.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+
+            <div class="logo">
+                <a href="home.html">ABC's</a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="orders.html">My Orders</a></li>
+                <li><a href="reservation.html">Reservation</a></li>
+            </ul>
+
+            <a href="menu.html" class="order-btn">
+                Order Now
+            </a>
+
+        </nav>
+    </header>
+
+
+    <!-- Orders Header -->
+    <section class="orders-header">
+        <p class="section-label">MY ORDER</p>
+
+        <h1>Your Selected Meals</h1>
+
+        <p>
+            Review your selected meals before proceeding to checkout.
+        </p>
+    </section>
+
+
+    <!-- Orders Section -->
+    <main class="orders-container">
+
+        <div id="orders-list">
+            <!-- Orders will appear here using JavaScript -->
+        </div>
+
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+
+            <div class="total-row">
+                <span>Total</span>
+                <span id="total-price">₦0</span>
+            </div>
+
+            <button class="checkout-btn" onclick="window.location.href='checkout.html'">
+                Proceed to Checkout
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ABC's Restaurant. All rights reserved.</p>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        // Get saved orders from localStorage
+        let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+        const ordersList = document.getElementById("orders-list");
+        const totalPrice = document.getElementById("total-price");
+
+
+        // Display orders
+        function displayOrders() {
+
+            ordersList.innerHTML = "";
+
+            let total = 0;
+
+
+            // Check if there are no orders
+            if (orders.length === 0) {
+
+                ordersList.innerHTML = `
+                    <div class="empty-orders">
+                        <h2>No orders yet</h2>
+                        <p>Add some delicious meals from the menu.</p>
+
+                        <a href="menu.html">
+                            Browse Menu
+                        </a>
+                    </div>
+                `;
+
+                totalPrice.textContent = "₦0";
+
+                return;
+            }
+
+
+            // Display each order
+            orders.forEach(function(order, index) {
+
+                total += Number(order.price);
+
+                const orderItem = document.createElement("div");
+
+                orderItem.classList.add("order-item");
+
+                orderItem.innerHTML = `
+                    <div>
+                        <h2>${order.name}</h2>
+                        <p>Quantity: 1</p>
+                    </div>
+
+                    <div class="order-right">
+                        <span>₦${Number(order.price).toLocaleString()}</span>
+
+                        <button onclick="removeOrder(${index})">
+                            Remove
+                        </button>
+                    </div>
+                `;
+
+                ordersList.appendChild(orderItem);
+            });
+
+
+            // Display total
+            totalPrice.textContent = `₦${total.toLocaleString()}`;
+        }
+
+
+        // Remove an order
+        function removeOrder(index) {
+
+            orders.splice(index, 1);
+
+            localStorage.setItem("orders", JSON.stringify(orders));
+
+            displayOrders();
+        }
+
+
+        // Display orders when page loads
+        displayOrders();
+
+    </script>
+
+</body>
+</html>

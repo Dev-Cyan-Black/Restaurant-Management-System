@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | ABC's Restaurant</title>
+
+    <link rel="stylesheet" href="checkout.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+
+            <div class="logo">
+                <a href="home.html">ABC's</a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="orders.html">My Orders</a></li>
+                <li><a href="reservation.html">Reservation</a></li>
+            </ul>
+
+            <a href="menu.html" class="order-btn">
+                Order Now
+            </a>
+
+        </nav>
+    </header>
+
+
+    <!-- Checkout Header -->
+    <section class="checkout-header">
+
+        <p class="section-label">CHECKOUT</p>
+
+        <h1>Complete Your Order</h1>
+
+        <p>
+            Enter your details and choose how you would like to receive your order.
+        </p>
+
+    </section>
+
+
+    <!-- Checkout Section -->
+    <main class="checkout-container">
+
+        <!-- Customer Details -->
+        <section class="checkout-form">
+
+            <h2>Customer Details</h2>
+
+            <form id="checkout-form">
+
+                <div class="form-group">
+                    <label for="customer-name">Full Name</label>
+                    <input type="text" id="customer-name" placeholder="Enter your full name" required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Order Type</label>
+
+                    <div class="order-options">
+
+                        <label class="option">
+                            <input type="radio" name="order-type" value="delivery" checked>
+                            Delivery
+                        </label>
+
+                        <label class="option">
+                            <input type="radio" name="order-type" value="pickup">
+                            Pickup
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group" id="address-group">
+
+                    <label for="address">Delivery Address</label>
+
+                    <textarea id="address" rows="4" placeholder="Enter your delivery address"></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="payment-method">
+                        Payment Method
+                    </label>
+
+                    <select id="payment-method" required>
+
+                        <option value="">
+                            Select payment method
+                        </option>
+
+                        <option value="card">
+                            Card Payment
+                        </option>
+
+                        <option value="cash">
+                            Cash on Delivery
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- Order Summary -->
+        <section class="checkout-summary">
+
+            <h2>Order Summary</h2>
+
+            <div id="checkout-items">
+                <!-- Selected orders will appear here -->
+            </div>
+
+            <div class="summary-total">
+
+                <span>Total</span>
+
+                <span id="checkout-total">
+                    ₦0
+                </span>
+
+            </div>
+
+            <button type="submit" form="checkout-form" class="place-order-btn">
+                Place Order
+            </button>
+
+        </section>
+
+        <!-- Order Tracking -->
+        <section class="order-tracking">
+
+            <p class="section-label">ORDER TRACKING</p>
+
+            <h2>Track Your Order</h2>
+
+            <p class="tracking-text">
+                Follow your order as it moves through each stage.
+            </p>
+
+            <div class="tracking-status">
+
+                <div class="status-step active">
+                    <div class="status-circle">✓</div>
+                    <p>Order Placed</p>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step active">
+                    <div class="status-circle">✓</div>
+                    <p>Confirmed</p>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step current">
+                    <div class="status-circle">3</div>
+                    <p>Preparing</p>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step">
+                    <div class="status-circle">4</div>
+                    <p>Out for Delivery</p>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step">
+                    <div class="status-circle">5</div>
+                    <p>Delivered</p>
+                </div>
+            </div>
+
+            <div class="cancel-section">
+
+                <button class="cancel-btn" id="cancel-order-btn">
+                    Cancel Order
+                </button>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ABC's Restaurant. All rights reserved.</p>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        // Get saved orders
+        let orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const checkoutItems = document.getElementById("checkout-items");
+        const checkoutTotal = document.getElementById("checkout-total");
+        let total = 0;
+
+        // Display selected orders
+        orders.forEach(function (order) {
+            total += Number(order.price);
+            const item = document.createElement("div");
+            item.classList.add("checkout-item");
+            item.innerHTML = `
+                <span>${order.name}</span>
+                <span>₦${Number(order.price).toLocaleString()}</span>
+            `;
+            checkoutItems.appendChild(item);
+        });
+
+
+        // Display total
+        checkoutTotal.textContent = `₦${total.toLocaleString()}`;
+
+
+        // Show or hide delivery address
+        const orderType = document.querySelectorAll(
+            'input[name="order-type"]'
+        );
+
+        const addressGroup = document.getElementById("address-group");
+        orderType.forEach(function (option) {
+            option.addEventListener("change", function () {
+                if (this.value === "delivery") {
+                    addressGroup.style.display = "block";
+                } else {
+                    addressGroup.style.display = "none";
+                }
+            });
+
+        });
+
+
+        // Place order
+        document.getElementById("checkout-form").addEventListener(
+            "submit",
+            function (event) {
+                event.preventDefault();
+                if (orders.length === 0) {
+                    alert("Your order is empty. Please add food from the menu.");
+                    return;
+                }
+
+                alert("Order placed successfully!");
+            }
+        );
+
+        // Cancel order
+        const cancelOrderButton = document.getElementById("cancel-order-btn");
+        cancelOrderButton.addEventListener("click", function () {
+
+            if (orders.length === 0) {
+                alert("There is no active order to cancel.");
+                return;
+            }
+
+            const confirmCancel = confirm(
+                "Are you sure you want to cancel this order?"
+            );
+
+            if (confirmCancel) {
+
+                // Clear the order
+                orders = [];
+                localStorage.removeItem("orders");
+
+                // Clear order summary
+                checkoutItems.innerHTML = "";
+
+                // Reset total
+                checkoutTotal.textContent = "₦0";
+
+                // Change button
+                cancelOrderButton.textContent = "Order Cancelled";
+                cancelOrderButton.disabled = true;
+                cancelOrderButton.style.backgroundColor = "#eeeeee";
+                cancelOrderButton.style.color = "#777777";
+                cancelOrderButton.style.cursor = "not-allowed";
+                alert("Your order has been cancelled.");
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
