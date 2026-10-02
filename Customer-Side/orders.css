@@ -1,0 +1,287 @@
+/* General Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #222222;
+}
+
+
+/* Navigation */
+
+header {
+    width: 100%;
+    padding: 20px 60px;
+    background-color: white;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo a {
+    text-decoration: none;
+    color: #ff7700;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333333;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+        color: #ff7700;
+    }
+
+.order-btn {
+    text-decoration: none;
+    background-color: #222222;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.order-btn:hover {
+    background-color: #ff7700;
+}
+
+
+/* Orders Header */
+
+.orders-header {
+    text-align: center;
+    padding: 50px 20px 40px;
+}
+
+.section-label {
+    color: #ff7700;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.orders-header h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.orders-header p:last-child {
+    color: #666666;
+    font-size: 16px;
+}
+
+
+/* Orders Container */
+
+.orders-container {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 30px 20px 80px;
+}
+
+
+/* Individual Order */
+
+.order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 25px;
+    margin-bottom: 15px;
+    border: 1px solid #ff7700;
+    border-radius: 10px;
+    background-color: white;
+    transition: 0.3s;
+}
+
+.order-item:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.order-item h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.order-item p {
+    color: #ff7700;
+    font-size: 14px;
+}
+
+
+/* Right Side */
+
+.order-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.order-right span {
+    font-size: 17px;
+    font-weight: bold;
+    color: #ff7700;
+}
+
+.order-right button {
+    border: none;
+    background-color: #222222;
+    color: white;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.order-right button:hover {
+    background-color: #ff7700;
+}
+
+
+/* Empty Orders */
+
+.empty-orders {
+    text-align: center;
+    padding: 60px 20px;
+
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+}
+
+.empty-orders h2 {
+    margin-bottom: 10px;
+}
+
+.empty-orders p {
+    color: #666666;
+    margin-bottom: 25px;
+}
+
+.empty-orders a {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #ff7700;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.empty-orders a:hover {
+    background-color: #8f5221;
+}
+
+
+/* Order Summary */
+
+.order-summary {
+    margin-top: 30px;
+    padding: 25px;
+    border-top: 1px solid #eeeeee;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#total-price {
+    color: #ff7700;
+}
+
+
+/* Checkout Button */
+
+.checkout-btn {
+    width: 100%;
+    border: none;
+    background-color: #222222;
+    color: white;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.checkout-btn:hover {
+    background-color: #ff7700;
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background-color: #222222;
+    color: #ff7700;
+}
+
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 20px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .order-btn {
+        padding: 10px 16px;
+    }
+
+    .orders-header {
+        padding: 60px 20px 35px;
+    }
+
+    .orders-header h1 {
+        font-size: 34px;
+    }
+
+    .orders-container {
+        padding: 20px 20px 60px;
+    }
+
+    .order-item {
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .order-right {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+}
