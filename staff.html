@@ -48,9 +48,10 @@ dialog::backdrop{background:rgba(10,20,30,.55)}dialog h2{margin-bottom:.8rem}
 .mi{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--line)}
 .step{display:flex;align-items:center;gap:.6rem}.step button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:1.1rem}.step span{min-width:1.4rem;text-align:center}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));background:var(--navy);color:#fff;padding:.7rem 1.2rem;border-left:3px solid var(--brass);opacity:0;transition:.2s;pointer-events:none;z-index:20}#toast.on{opacity:1}
+.land{max-width:420px;margin:10vh auto;text-align:center;padding:1rem}.land .btn{display:block;width:100%;margin:.7rem 0;padding:1rem;font-size:1.05rem}.cwrap{max-width:560px;margin:0 auto}
 @media (max-width:560px){.rrow{grid-template-columns:60px 1fr}.rrow .acts{grid-column:1/-1}}
 </style></head><body>
-<header><div class="bar"><div><h1>ABC · Staff</h1><small id="clk"></small></div><button class="btn" onclick="openOrder('')">+ New order</button></div>
+<header><div class="bar"><div><h1>ABC · Staff</h1><small id="clk"></small></div><button class="btn" onclick="openOrder('')">+ Walk-in order</button></div>
 <div class="stats" id="stats"></div>
 <nav id="nav"></nav></header>
 <main id="view"></main>
@@ -76,7 +77,7 @@ function vOrders(){const F=[["active","Active"],["new","New"],["preparing","Prep
  const L=st.orders.filter(o=>of==="active"?act(o):of==="done"?!act(o):o.s===of).sort((a,b)=>of==="done"?b.ts-a.ts:a.ts-b.ts);
  return`<div class="top"><div class="chips">${F.map(([k,l])=>`<button class="chip ${of===k?"on":""}" onclick="of='${k}';render()">${l}</button>`).join("")}</div></div>
  ${L.length?`<div class="grid">${L.map(o=>{const n=NEXT[o.s];return`<div class="card s-${o.s}"><div class="h"><b>#${o.no} · ${esc(o.tk)}</b><span class="pill">${LAB[o.s]}</span></div>
- <div class="mu">Placed ${ago(o.ts)} ago</div><ul>${o.items.map(i=>`<li>${i.q}× ${esc(i.n)}</li>`).join("")}</ul>${o.note?`<div class="mu">Note: ${esc(o.note)}</div>`:""}
+ <div class="mu">${o.cn?`${esc(o.cn)} · ${esc(o.cp)} · online · `:""}Placed ${ago(o.ts)} ago</div><ul>${o.items.map(i=>`<li>${i.q}× ${esc(i.n)}</li>`).join("")}</ul>${o.note?`<div class="mu">Note: ${esc(o.note)}</div>`:""}
  <b>${money(o.total)}</b><div class="acts">${n?`<button class="btn ${o.s==="new"?"ok":""}" onclick="setS('${o.id}','${n[0]}')">${n[1]}</button>`:""}${["new","accepted"].includes(o.s)?`<button class="btn ghost sm" onclick="setS('${o.id}','cancelled')">${o.s==="new"?"Decline":"Cancel"}</button>`:""}</div></div>`}).join("")}</div>`:`<div class="empty">No orders here yet. Tap “+ New order” to take one.</div>`}`}
 let cart={},odt="";
 function openOrder(tid){cart={};odt=tid;drawO();$("#odlg").showModal()}
@@ -91,16 +92,11 @@ function placeO(){const items=MENU.filter(([n])=>cart[n]).map(([n,p])=>({n,p,q:c
  $("#odlg").close();put("orders",o);setTab("orders");toast("Order #"+o.no+" placed")}
 
 /* ---------- reservations ---------- */
-function resForm(){return`<div class="panel"><h2 style="margin-bottom:.7rem">New reservation</h2><form class="form" onsubmit="return addR(event)">
- <div style="grid-column:span 2"><label>Guest name</label><input name="nm" required></div><div><label>Phone</label><input name="ph" type="tel"></div>
- <div><label>Party size</label><input name="sz" type="number" min="1" max="20" value="2" required></div><div><label>Date</label><input name="d" type="date" min="${today}" value="${rd<today?today:rd}" required></div>
- <div><label>Time</label><input name="tm" type="time" value="19:00" required></div><div style="grid-column:span 2"><label>Notes</label><input name="nt" placeholder="Birthday, high chair…"></div><button class="btn ok">Book</button></form></div>
- <div class="top"><h2>Bookings</h2><div><label for="rdd" style="display:inline;margin-right:.5rem">Date</label><input id="rdd" type="date" value="${rd}" onchange="rd=this.value;render()" style="width:auto"></div></div><div id="rl"></div>`}
-function addR(e){e.preventDefault();const f=new FormData(e.target);rd=f.get("d");put("res",{id:"r"+Date.now(),nm:f.get("nm").trim(),ph:f.get("ph"),sz:+f.get("sz"),d:f.get("d"),tm:f.get("tm"),nt:f.get("nt").trim(),s:"booked",tid:""});built="";render();toast("Reservation booked");return false}
 function setR(id,s){const r=st.res.find(x=>x.id===id);r.s=s;put("res",r);toast(r.nm+" · "+LAB[s])}
-function resList(){const L=st.res.filter(r=>r.d===rd).sort((a,b)=>a.tm.localeCompare(b.tm));
- return L.length?L.map(r=>`<div class="rrow"><div class="t">${r.tm}</div><div><b>${esc(r.nm)}</b> · party of ${r.sz} <span class="pill s-${r.s}" style="margin-left:.3rem;color:var(--mute)">${LAB[r.s]}${r.tid?" · "+tn(r.tid):""}</span><div class="mu">${esc(r.ph)} ${r.nt?"· "+esc(r.nt):""}</div></div>
- <div class="acts">${r.s==="booked"?`<button class="btn ok sm" onclick="openSeat('','${r.id}')">Seat</button><button class="btn ghost sm" onclick="setR('${r.id}','noshow')">No-show</button><button class="btn ghost sm" onclick="setR('${r.id}','cancelled')">Cancel</button>`:""}</div></div>`).join(""):`<div class="empty">No reservations for this date.</div>`}
+function rrow(r){const p=r.s==="pending";return`<div class="rrow"><div class="t">${r.tm}</div><div><b>${esc(r.nm)}</b> · party of ${r.sz} <span class="pill" style="margin-left:.3rem;color:var(--mute)">${p?"Request":LAB[r.s]}${r.tid?" · "+tn(r.tid):""}</span><div class="mu">${p?r.d+" · ":""}${esc(r.ph)} ${r.nt?"· "+esc(r.nt):""}</div></div>
+ <div class="acts">${p?`<button class="btn ok sm" onclick="setR('${r.id}','booked')">Confirm</button><button class="btn ghost sm" onclick="setR('${r.id}','cancelled')">Decline</button>`:""}${r.s==="booked"?`<button class="btn ok sm" onclick="openSeat('','${r.id}')">Seat</button><button class="btn ghost sm" onclick="setR('${r.id}','noshow')">No-show</button><button class="btn ghost sm" onclick="setR('${r.id}','cancelled')">Cancel</button>`:""}</div></div>`}
+function vRes(){const P=st.res.filter(r=>r.s==="pending").sort((a,b)=>(a.d+a.tm).localeCompare(b.d+b.tm)),L=st.res.filter(r=>r.d===rd&&r.s!=="pending").sort((a,b)=>a.tm.localeCompare(b.tm));
+ return(P.length?`<div class="panel"><h2 style="margin-bottom:.4rem">New booking requests (${P.length})</h2>${P.map(rrow).join("")}</div>`:`<div class="empty" style="padding:1rem">No new booking requests. Customer bookings appear here.</div>`)+`<div class="top"><h2>Bookings</h2><div><label for="rdd" style="display:inline;margin-right:.5rem">Date</label><input id="rdd" type="date" value="${rd}" onchange="rd=this.value;render()" style="width:auto"></div></div>`+(L.length?L.map(rrow).join(""):`<div class="empty">No confirmed bookings for this date.</div>`)}
 
 /* ---------- tables & seating ---------- */
 function vTables(){return`<div class="top"><span class="mu">${st.tables.filter(t=>t.s==="free").length} of ${st.tables.length} tables free</span><button class="btn" onclick="openSeat('','')">Seat walk-in guests</button></div>
@@ -121,16 +117,39 @@ function doSeat(){const t=st.tables.find(x=>x.id===$("#stb").value);if(!t)return
  if(SD.rid){const r=st.res.find(x=>x.id===SD.rid);r.s="seated";r.tid=t.id;put("res",r)}
  $("#sdlg").close();toast("Seated at "+t.n)}
 
+/* ---------- customer side: sends orders and bookings to staff ---------- */
+let mode="",cc={},cdone="",ct="o",denied=0,loaded={};try{mode=localStorage.getItem("abc_mode")||""}catch(e){}
+function beep(){try{const a=new(window.AudioContext||webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(a.currentTime+.25)}catch(e){}}
+function setMode(m){mode=m;cdone="";try{m==="staff"?localStorage.setItem("abc_mode","staff"):localStorage.removeItem("abc_mode")}catch(e){}if(m==="staff"&&DB&&!st.tables.length)seedT();render();scrollTo(0,0)}
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()).replace(/[-.]/g,"").slice(0,20);
+function send(c,o){if(!DB){toast("Sending isn't available right now. Please ask a member of staff.");return false}
+ DB.collection(c).doc(o.id).set(o).then(()=>{cdone=o;render()}).catch(()=>toast("Could not send. Please try again."));return false}
+const vLand=()=>`<div class="land"><h1 style="font-size:3rem">ABC</h1><p class="mu">Halal kitchen</p><button class="btn" onclick="setMode('cust')">Order food or book a table</button><button class="btn ghost" onclick="setMode('staff')">Staff sign-in</button></div>`;
+function cqc(i,d){const n=MENU[i][0];cc[n]=Math.max(0,(cc[n]||0)+d);$("#c"+i).textContent=cc[n];$("#ctot").textContent=money(MENU.reduce((a,[m,p])=>a+(cc[m]||0)*p,0))}
+function vCust(){if(cdone)return`<div class="land"><h1>Thank you!</h1><p>${cdone.items?`Your order #${cdone.no} has been sent to the kitchen.`:`Your booking request for ${cdone.sz} on ${cdone.d} at ${cdone.tm} has been sent.`} A member of staff will confirm it shortly.</p><button class="btn" onclick="cdone='';cc={};render()">Make another request</button></div>`;
+ const tabs=`<div class="cwrap"><button class="btn ghost sm" onclick="setMode('')">← Back</button><h1 style="margin:.6rem 0">ABC</h1><div class="chips" style="margin-bottom:1rem"><button class="chip ${ct==="o"?"on":""}" onclick="ct='o';render()">Order food</button><button class="chip ${ct==="r"?"on":""}" onclick="ct='r';render()">Book a table</button></div>`;
+ if(ct==="r")return tabs+`<form class="form" style="grid-template-columns:1fr 1fr" onsubmit="return custRes(event)"><div style="grid-column:span 2"><label>Your name</label><input name="nm" required></div><div><label>Phone</label><input name="ph" type="tel" required></div><div><label>Guests</label><input name="sz" type="number" min="1" max="20" value="2" required></div><div><label>Date</label><input name="d" type="date" min="${today}" value="${today}" required></div><div><label>Time</label><input name="tm" type="time" value="19:00" required></div><div style="grid-column:span 2"><label>Notes</label><input name="nt" placeholder="Birthday, high chair…"></div><button class="btn ok" style="grid-column:span 2;padding:.9rem">Request booking</button></form></div>`;
+ return tabs+`<form onsubmit="return custOrder(event)"><div class="form" style="grid-template-columns:1fr 1fr;margin-bottom:1rem"><div style="grid-column:span 2"><label>Your name</label><input name="nm" required></div><div><label>Phone</label><input name="ph" type="tel" required></div><div><label>I want</label><select name="ty" onchange="this.form.tb.style.display=this.value==='d'?'':'none'"><option value="d">Dine in</option><option value="t">Takeaway</option></select></div><div style="grid-column:span 2"><label>Table number (dine in)</label><select name="tb">${st.tables.length?st.tables.map((t,i)=>`<option value="${t.id}">${t.n}</option>`).join(""):[1,2,3,4,5,6,7,8,9,10].map(n=>`<option value="t${n}">T${n}</option>`).join("")}</select></div></div>
+ ${MENU.map(([n,p],i)=>`<div class="mi"><div>${esc(n)}<div class="mu">${money(p)}</div></div><div class="step"><button type="button" onclick="cqc(${i},-1)" aria-label="Remove one">−</button><span id="c${i}">${cc[n]||0}</span><button type="button" onclick="cqc(${i},1)" aria-label="Add one">+</button></div></div>`).join("")}
+ <label style="margin-top:.8rem">Note for the kitchen</label><input name="nt" placeholder="e.g. no pepper"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem"><b id="ctot" style="font-size:1.4rem">${money(MENU.reduce((a,[n,p])=>a+(cc[n]||0)*p,0))}</b><button class="btn ok" style="padding:.8rem 1.4rem">Send order</button></div></form></div>`}
+function custOrder(e){e.preventDefault();const f=new FormData(e.target),items=MENU.filter(([n])=>cc[n]).map(([n,p])=>({n,p,q:cc[n]}));if(!items.length){toast("Add at least one item");return false}
+ const d=f.get("ty")==="d",tb=f.get("tb");return send("orders",{id:uid(),no:1000+Math.floor(Math.random()*9000),t:d?tb:"",tk:d?tb.toUpperCase():"Takeaway",items,total:items.reduce((a,i)=>a+i.p*i.q,0),note:f.get("nt").trim(),s:"new",ts:Date.now(),cn:f.get("nm").trim(),cp:f.get("ph"),src:"online"})}
+function custRes(e){e.preventDefault();const f=new FormData(e.target);return send("res",{id:uid(),nm:f.get("nm").trim(),ph:f.get("ph"),sz:+f.get("sz"),d:f.get("d"),tm:f.get("tm"),nt:f.get("nt").trim(),s:"pending",tid:"",src:"online",ts:Date.now()})}
+
 /* ---------- shell ---------- */
 function setTab(t){tab=t;built="";render();scrollTo(0,0)}
-function render(){const c=k=>st.orders.filter(o=>o.s===k).length,rn=st.res.filter(r=>r.d===today&&r.s==="booked").length;
- $("#stats").innerHTML=`<span class="stat">New <b>${c("new")}</b></span><span class="stat">Preparing <b>${c("accepted")+c("preparing")}</b></span><span class="stat">Ready to serve <b>${c("ready")}</b></span><span class="stat">Free tables <b>${st.tables.filter(t=>t.s==="free").length}</b></span><span class="stat">Bookings today <b>${rn}</b></span>`;
+function render(){const H=document.querySelector("header");H.style.display=mode==="staff"?"":"none";
+ if(mode!=="staff"){$("#view").innerHTML=mode==="cust"?vCust():vLand();return}
+ if(denied){$("#view").innerHTML=`<div class="empty">Staff access only. Ask the manager to invite you with edit access.<br><br><button class="btn" onclick="setMode('')">Back</button></div>`;return}
+ const c=k=>st.orders.filter(o=>o.s===k).length,rn=st.res.filter(r=>r.s==="pending").length;
+ $("#stats").innerHTML=`<span class="stat">New <b>${c("new")}</b></span><span class="stat">Preparing <b>${c("accepted")+c("preparing")}</b></span><span class="stat">Ready to serve <b>${c("ready")}</b></span><span class="stat">Free tables <b>${st.tables.filter(t=>t.s==="free").length}</b></span><span class="stat">Booking requests <b>${rn}</b></span>`;
  $("#nav").innerHTML=[["orders","Orders",c("new")],["res","Reservations",rn],["tables","Tables",0]].map(([k,l,n])=>`<button class="${tab===k?"on":""}" onclick="setTab('${k}')">${l}${n?`<i>${n}</i>`:""}</button>`).join("");
- if(tab==="res"){if(built!=="res"){$("#view").innerHTML=resForm();built="res"}$("#rl").innerHTML=resList()}
- else{$("#view").innerHTML=tab==="orders"?vOrders():vTables();built=tab}}
+ $("#view").innerHTML=tab==="orders"?vOrders():tab==="res"?vRes():vTables()}
 const tick=()=>{$("#clk").textContent=new Date().toLocaleString("en-GB",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})};
-setInterval(()=>{tick();if(!document.querySelector("dialog[open]")&&!document.activeElement.matches("input,select"))render()},30000);tick();render();
+setInterval(()=>{tick();if(mode==="staff"&&!document.querySelector("dialog[open]")&&!document.activeElement.matches("input,select"))render()},30000);tick();render();
 (async()=>{try{DB=await claude.use("db")}catch(e){}
- if(DB){["orders","res","tables"].forEach(c=>DB.collection(c).onSnapshot(s=>{st[c]=s.docs.map(d=>({...d.data(),id:d.id}));if(c==="tables"&&!st.tables.length)seedT();if(!document.querySelector("dialog[open]"))render()},()=>{}))}
+ if(DB){["orders","res","tables"].forEach(c=>DB.collection(c).onSnapshot(s=>{denied=0;const old=new Set(st[c].map(x=>x.id));st[c]=s.docs.map(d=>({...d.data(),id:d.id}));
+  if(loaded[c])st[c].filter(x=>!old.has(x.id)&&x.src==="online").forEach(x=>{toast(c==="res"?"New booking request: "+x.nm:"New order #"+x.no+" from "+(x.cn||"a customer"));beep()});loaded[c]=1;
+  if(c==="tables"&&!st.tables.length&&mode==="staff")seedT();if(!document.querySelector("dialog[open]"))render()},()=>{denied=1;render()}))}
  else{try{st=JSON.parse(localStorage.getItem("abc_staff"))||st}catch(e){}if(!st.tables.length)seedT();render()}})();
 </script></body></html>
