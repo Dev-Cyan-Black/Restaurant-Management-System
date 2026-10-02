@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABC — Staff Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--panel:#f6f8fa;--ink:#15212c;--mute:#5d6b79;--line:#dfe4ea;--navy:#14263a;--brass:#9c7f3c;--ok:#2f6b50;--red:#9b3a34;--blue:#2c5d8f;--amb:#b8651b;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1721;--panel:#15222e;--ink:#e6ecf1;--mute:#97a6b4;--line:#26374a;--navy:#08111a;--brass:#c3a45a;--ok:#6dbb98;--red:#d27269;--blue:#7fb0e0;--amb:#e59a55}}
+:root[data-theme="dark"]{--bg:#0d1721;--panel:#15222e;--ink:#e6ecf1;--mute:#97a6b4;--line:#26374a;--navy:#08111a;--brass:#c3a45a;--ok:#6dbb98;--red:#d27269;--blue:#7fb0e0;--amb:#e59a55}
+html{height:100%}*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:15px/1.45 "Hanken Grotesk",system-ui,sans-serif}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+header{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;padding:calc(.7rem + env(safe-area-inset-top,0px)) 1.2rem .6rem}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.bar h1{font-size:1.7rem;color:#fff}.bar small{color:#a9bccd}
+.stats{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
+.stat{background:rgba(255,255,255,.1);padding:.25rem .7rem;border-radius:20px;font-size:.85rem}.stat b{color:#f0d68a}
+nav{display:flex;gap:.3rem}
+nav button{flex:1;background:none;border:0;color:#cfdbe6;padding:.65rem .5rem;border-bottom:3px solid transparent;cursor:pointer;font-weight:500}
+nav button.on{color:#fff;border-bottom-color:var(--brass)}
+nav i{font-style:normal;background:var(--brass);color:#fff;border-radius:20px;padding:0 .45rem;margin-left:.3rem;font-size:.75rem}
+main{padding:1.2rem 1.2rem calc(2rem + env(safe-area-inset-bottom,0px));max-width:1200px;margin:0 auto}
+.btn{background:var(--navy);color:#fff;border:0;padding:.6rem 1rem;border-radius:4px;cursor:pointer;font-weight:500}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.ok{background:var(--ok)}.btn.bad{background:var(--red)}.btn.sm{padding:.4rem .7rem;font-size:.85rem}
+input,select,textarea{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:.55rem .65rem;width:100%}
+label{display:block;color:var(--mute);font-size:.82rem;margin-bottom:.2rem}
+.top{display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}.chip{border:1px solid var(--line);background:var(--bg);padding:.35rem .8rem;border-radius:20px;cursor:pointer}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+.card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--line);padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+.card .h{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem}.card .h b{font:700 1.35rem "Cormorant Garamond",serif}
+.card ul{margin:0;padding-left:1.1rem}.card .acts{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:auto;padding-top:.4rem}.card .acts .btn:first-child{flex:1}
+.mu{color:var(--mute);font-size:.85rem}
+.pill{font-size:.75rem;font-weight:600;padding:.12rem .6rem;border-radius:20px;border:1px solid currentColor}
+.s-new{border-left-color:var(--brass)}.s-new .pill{color:var(--brass)}.s-accepted{border-left-color:var(--blue)}.s-accepted .pill{color:var(--blue)}
+.s-preparing{border-left-color:var(--amb)}.s-preparing .pill{color:var(--amb)}.s-ready,.s-free{border-left-color:var(--ok)}.s-ready .pill,.s-free .pill{color:var(--ok)}
+.s-occupied{border-left-color:var(--red)}.s-occupied .pill{color:var(--red)}.s-cleaning{border-left-color:var(--amb)}.s-cleaning .pill{color:var(--amb)}
+.s-served .pill,.s-paid .pill,.s-seated .pill,.s-booked .pill{color:var(--mute)}.s-booked{border-left-color:var(--blue)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;align-items:end}
+.panel{background:var(--panel);border:1px solid var(--line);padding:1rem;margin-bottom:1.2rem}
+.rrow{display:grid;grid-template-columns:70px 1fr auto;gap:.8rem;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--line)}
+.rrow .t{font:700 1.4rem "Cormorant Garamond",serif}.rrow .acts{display:flex;gap:.4rem;flex-wrap:wrap}
+.empty{text-align:center;color:var(--mute);padding:2.5rem 1rem}
+dialog{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:1.4rem;width:min(520px,94vw);max-height:92vh;overflow:auto}
+dialog::backdrop{background:rgba(10,20,30,.55)}dialog h2{margin-bottom:.8rem}
+.mi{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--line)}
+.step{display:flex;align-items:center;gap:.6rem}.step button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:1.1rem}.step span{min-width:1.4rem;text-align:center}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));background:var(--navy);color:#fff;padding:.7rem 1.2rem;border-left:3px solid var(--brass);opacity:0;transition:.2s;pointer-events:none;z-index:20}#toast.on{opacity:1}
+@media (max-width:560px){.rrow{grid-template-columns:60px 1fr}.rrow .acts{grid-column:1/-1}}
+</style></head><body>
+<header><div class="bar"><div><h1>ABC · Staff</h1><small id="clk"></small></div><button class="btn" onclick="openOrder('')">+ New order</button></div>
+<div class="stats" id="stats"></div>
+<nav id="nav"></nav></header>
+<main id="view"></main>
+<dialog id="odlg"></dialog><dialog id="sdlg"></dialog><div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),money=n=>"₦"+Math.round(n).toLocaleString("en-NG");
+const MENU=[["Classic beef burger",4500],["Double cheese burger",6500],["Spicy chicken burger",5000],["Chicken shawarma",3500],["Beef shawarma",4000],["Fried chicken, 2 pieces",4500],["Chicken wings, 6 pieces",4000],["Crispy fries",2000],["Chicken pizza, medium",8500],["Jollof rice & grilled chicken",6500],["Fried rice & beef",6000],["Pounded yam & egusi soup",7500],["Beef suya platter",5500],["Moi moi",1500],["Zobo",1500],["Chapman (non-alcoholic)",2000],["Chocolate milkshake",3000],["Bottled water",500]];
+const LAB={new:"New",accepted:"Accepted",preparing:"Preparing",ready:"Ready",served:"Served",paid:"Paid",cancelled:"Cancelled",free:"Free",occupied:"Occupied",cleaning:"Cleaning",booked:"Booked",seated:"Seated",noshow:"No-show"};
+const NEXT={new:["accepted","Accept order"],accepted:["preparing","Start preparing"],preparing:["ready","Mark ready"],ready:["served","Mark served"],served:["paid","Mark paid"]};
+let st={orders:[],res:[],tables:[]},DB=null,tab="orders",of="active",today=new Date().toISOString().slice(0,10),rd=today,built="",seeded=0;
+const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2200)};
+const ago=ts=>{const m=Math.floor((Date.now()-ts)/60000);return m<1?"just now":m<60?m+" min":Math.floor(m/60)+"h "+m%60+"m"};
+function put(c,o){const a=st[c],i=a.findIndex(x=>x.id===o.id);i<0?a.push(o):a[i]=o;
+ if(DB)DB.collection(c).doc(o.id).set(o).catch(()=>toast("Could not save. Check you have edit access."));else{try{localStorage.setItem("abc_staff",JSON.stringify(st))}catch(e){}}
+ render()}
+function seedT(){if(seeded++)return;[2,2,2,2,4,4,4,4,6,6].forEach((cap,i)=>put("tables",{id:"t"+(i+1),n:"T"+(i+1),cap,s:"free",g:0,nm:"",since:0,rid:""}))}
+const tn=id=>(st.tables.find(t=>t.id===id)||{}).n||"";
+const act=o=>!["paid","cancelled"].includes(o.s);
+
+/* ---------- orders ---------- */
+function setS(id,s){const o=st.orders.find(x=>x.id===id);o.s=s;o.up=Date.now();put("orders",o);toast("Order #"+o.no+" · "+LAB[s])}
+function vOrders(){const F=[["active","Active"],["new","New"],["preparing","Preparing"],["ready","Ready"],["done","Completed"]];
+ const L=st.orders.filter(o=>of==="active"?act(o):of==="done"?!act(o):o.s===of).sort((a,b)=>of==="done"?b.ts-a.ts:a.ts-b.ts);
+ return`<div class="top"><div class="chips">${F.map(([k,l])=>`<button class="chip ${of===k?"on":""}" onclick="of='${k}';render()">${l}</button>`).join("")}</div></div>
+ ${L.length?`<div class="grid">${L.map(o=>{const n=NEXT[o.s];return`<div class="card s-${o.s}"><div class="h"><b>#${o.no} · ${esc(o.tk)}</b><span class="pill">${LAB[o.s]}</span></div>
+ <div class="mu">Placed ${ago(o.ts)} ago</div><ul>${o.items.map(i=>`<li>${i.q}× ${esc(i.n)}</li>`).join("")}</ul>${o.note?`<div class="mu">Note: ${esc(o.note)}</div>`:""}
+ <b>${money(o.total)}</b><div class="acts">${n?`<button class="btn ${o.s==="new"?"ok":""}" onclick="setS('${o.id}','${n[0]}')">${n[1]}</button>`:""}${["new","accepted"].includes(o.s)?`<button class="btn ghost sm" onclick="setS('${o.id}','cancelled')">${o.s==="new"?"Decline":"Cancel"}</button>`:""}</div></div>`}).join("")}</div>`:`<div class="empty">No orders here yet. Tap “+ New order” to take one.</div>`}`}
+let cart={},odt="";
+function openOrder(tid){cart={};odt=tid;drawO();$("#odlg").showModal()}
+function drawO(){const tot=MENU.reduce((a,[n,p])=>a+(cart[n]||0)*p,0),free=st.tables.filter(t=>t.s==="occupied");
+ $("#odlg").innerHTML=`<h2>New order</h2><label>Table</label><select onchange="odt=this.value" style="margin-bottom:.8rem"><option value="">Takeaway</option>${st.tables.map(t=>`<option value="${t.id}" ${odt===t.id?"selected":""}>${t.n} (${LAB[t.s]})</option>`).join("")}</select>
+ ${MENU.map(([n,p],i)=>`<div class="mi"><div>${esc(n)}<div class="mu">${money(p)}</div></div><div class="step"><button onclick="cq(${i},-1)" aria-label="Remove one">−</button><span>${cart[n]||0}</span><button onclick="cq(${i},1)" aria-label="Add one">+</button></div></div>`).join("")}
+ <label style="margin-top:.8rem">Note for the kitchen</label><input id="onote" placeholder="e.g. no pepper">
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem"><b style="font-size:1.3rem">${money(tot)}</b><span style="display:flex;gap:.5rem"><button class="btn ghost" onclick="$('#odlg').close()">Cancel</button><button class="btn ok" onclick="placeO()">Place order</button></span></div>`}
+function cq(i,d){const n=MENU[i][0];cart[n]=Math.max(0,(cart[n]||0)+d);const v=$("#onote")?.value;drawO();if(v)$("#onote").value=v}
+function placeO(){const items=MENU.filter(([n])=>cart[n]).map(([n,p])=>({n,p,q:cart[n]}));if(!items.length)return toast("Add at least one item");
+ const o={id:"o"+Date.now(),no:st.orders.reduce((m,x)=>Math.max(m,x.no),100)+1,t:odt,tk:odt?tn(odt):"Takeaway",items,total:items.reduce((a,i)=>a+i.p*i.q,0),note:$("#onote").value.trim(),s:"new",ts:Date.now()};
+ $("#odlg").close();put("orders",o);setTab("orders");toast("Order #"+o.no+" placed")}
+
+/* ---------- reservations ---------- */
+function resForm(){return`<div class="panel"><h2 style="margin-bottom:.7rem">New reservation</h2><form class="form" onsubmit="return addR(event)">
+ <div style="grid-column:span 2"><label>Guest name</label><input name="nm" required></div><div><label>Phone</label><input name="ph" type="tel"></div>
+ <div><label>Party size</label><input name="sz" type="number" min="1" max="20" value="2" required></div><div><label>Date</label><input name="d" type="date" min="${today}" value="${rd<today?today:rd}" required></div>
+ <div><label>Time</label><input name="tm" type="time" value="19:00" required></div><div style="grid-column:span 2"><label>Notes</label><input name="nt" placeholder="Birthday, high chair…"></div><button class="btn ok">Book</button></form></div>
+ <div class="top"><h2>Bookings</h2><div><label for="rdd" style="display:inline;margin-right:.5rem">Date</label><input id="rdd" type="date" value="${rd}" onchange="rd=this.value;render()" style="width:auto"></div></div><div id="rl"></div>`}
+function addR(e){e.preventDefault();const f=new FormData(e.target);rd=f.get("d");put("res",{id:"r"+Date.now(),nm:f.get("nm").trim(),ph:f.get("ph"),sz:+f.get("sz"),d:f.get("d"),tm:f.get("tm"),nt:f.get("nt").trim(),s:"booked",tid:""});built="";render();toast("Reservation booked");return false}
+function setR(id,s){const r=st.res.find(x=>x.id===id);r.s=s;put("res",r);toast(r.nm+" · "+LAB[s])}
+function resList(){const L=st.res.filter(r=>r.d===rd).sort((a,b)=>a.tm.localeCompare(b.tm));
+ return L.length?L.map(r=>`<div class="rrow"><div class="t">${r.tm}</div><div><b>${esc(r.nm)}</b> · party of ${r.sz} <span class="pill s-${r.s}" style="margin-left:.3rem;color:var(--mute)">${LAB[r.s]}${r.tid?" · "+tn(r.tid):""}</span><div class="mu">${esc(r.ph)} ${r.nt?"· "+esc(r.nt):""}</div></div>
+ <div class="acts">${r.s==="booked"?`<button class="btn ok sm" onclick="openSeat('','${r.id}')">Seat</button><button class="btn ghost sm" onclick="setR('${r.id}','noshow')">No-show</button><button class="btn ghost sm" onclick="setR('${r.id}','cancelled')">Cancel</button>`:""}</div></div>`).join(""):`<div class="empty">No reservations for this date.</div>`}
+
+/* ---------- tables & seating ---------- */
+function vTables(){return`<div class="top"><span class="mu">${st.tables.filter(t=>t.s==="free").length} of ${st.tables.length} tables free</span><button class="btn" onclick="openSeat('','')">Seat walk-in guests</button></div>
+ <div class="grid">${st.tables.map(t=>{const oo=st.orders.filter(o=>o.t===t.id&&act(o)),own=oo.reduce((a,o)=>a+o.total,0);
+ return`<div class="card s-${t.s}"><div class="h"><b>${t.n}</b><span class="pill">${LAB[t.s]}</span></div><div class="mu">Seats ${t.cap}</div>
+ ${t.s==="occupied"?`<div>${t.g} guests${t.nm?" · "+esc(t.nm):""}<div class="mu">Seated ${ago(t.since)} ago</div></div><div>${oo.length} open order${oo.length==1?"":"s"}${own?" · "+money(own):""}</div>`:""}
+ <div class="acts">${t.s==="free"?`<button class="btn" onclick="openSeat('${t.id}','')">Seat guests</button>`:""}${t.s==="occupied"?`<button class="btn" onclick="openOrder('${t.id}')">Add order</button><button class="btn ghost sm" onclick="clearT('${t.id}')">Clear table</button>`:""}${t.s==="cleaning"?`<button class="btn ok" onclick="freeT('${t.id}')">Mark clean &amp; free</button>`:""}</div></div>`}).join("")}</div>`}
+function clearT(id){const t=st.tables.find(x=>x.id===id);Object.assign(t,{s:"cleaning",g:0,nm:"",since:0,rid:""});put("tables",t);toast(t.n+" is being cleaned")}
+function freeT(id){const t=st.tables.find(x=>x.id===id);t.s="free";put("tables",t);toast(t.n+" is free")}
+let SD={};
+function tOpts(sz,sel){return st.tables.filter(t=>t.s==="free").sort((a,b)=>a.cap-b.cap).map(t=>`<option value="${t.id}" ${t.cap<sz?"disabled":""} ${sel===t.id?"selected":""}>${t.n} · seats ${t.cap}${t.cap<sz?" (too small)":""}</option>`).join("")||"<option value=''>No free tables</option>"}
+function openSeat(tid,rid){const r=rid&&st.res.find(x=>x.id===rid);SD={rid};const sz=r?r.sz:2;
+ $("#sdlg").innerHTML=`<h2>Seat guests</h2>${r?`<p class="mu">Reservation at ${r.tm} for ${esc(r.nm)}</p>`:""}<div class="form" style="grid-template-columns:1fr 1fr"><div><label>Party size</label><input id="sz" type="number" min="1" value="${sz}" oninput="$('#stb').innerHTML=tOpts(+this.value,$('#stb').value)"></div><div><label>Name (optional)</label><input id="sn" value="${esc(r?r.nm:"")}"></div></div>
+ <label style="margin-top:.8rem">Table</label><select id="stb">${tOpts(sz,tid)}</select>
+ <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.2rem"><button class="btn ghost" onclick="$('#sdlg').close()">Cancel</button><button class="btn ok" onclick="doSeat()">Seat now</button></div>`;$("#sdlg").showModal()}
+function doSeat(){const t=st.tables.find(x=>x.id===$("#stb").value);if(!t)return toast("Choose a free table");const sz=+$("#sz").value;if(sz>t.cap)return toast(t.n+" only seats "+t.cap);
+ Object.assign(t,{s:"occupied",g:sz,nm:$("#sn").value.trim(),since:Date.now(),rid:SD.rid||""});put("tables",t);
+ if(SD.rid){const r=st.res.find(x=>x.id===SD.rid);r.s="seated";r.tid=t.id;put("res",r)}
+ $("#sdlg").close();toast("Seated at "+t.n)}
+
+/* ---------- shell ---------- */
+function setTab(t){tab=t;built="";render();scrollTo(0,0)}
+function render(){const c=k=>st.orders.filter(o=>o.s===k).length,rn=st.res.filter(r=>r.d===today&&r.s==="booked").length;
+ $("#stats").innerHTML=`<span class="stat">New <b>${c("new")}</b></span><span class="stat">Preparing <b>${c("accepted")+c("preparing")}</b></span><span class="stat">Ready to serve <b>${c("ready")}</b></span><span class="stat">Free tables <b>${st.tables.filter(t=>t.s==="free").length}</b></span><span class="stat">Bookings today <b>${rn}</b></span>`;
+ $("#nav").innerHTML=[["orders","Orders",c("new")],["res","Reservations",rn],["tables","Tables",0]].map(([k,l,n])=>`<button class="${tab===k?"on":""}" onclick="setTab('${k}')">${l}${n?`<i>${n}</i>`:""}</button>`).join("");
+ if(tab==="res"){if(built!=="res"){$("#view").innerHTML=resForm();built="res"}$("#rl").innerHTML=resList()}
+ else{$("#view").innerHTML=tab==="orders"?vOrders():vTables();built=tab}}
+const tick=()=>{$("#clk").textContent=new Date().toLocaleString("en-GB",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})};
+setInterval(()=>{tick();if(!document.querySelector("dialog[open]")&&!document.activeElement.matches("input,select"))render()},30000);tick();render();
+(async()=>{try{DB=await claude.use("db")}catch(e){}
+ if(DB){["orders","res","tables"].forEach(c=>DB.collection(c).onSnapshot(s=>{st[c]=s.docs.map(d=>({...d.data(),id:d.id}));if(c==="tables"&&!st.tables.length)seedT();if(!document.querySelector("dialog[open]"))render()},()=>{}))}
+ else{try{st=JSON.parse(localStorage.getItem("abc_staff"))||st}catch(e){}if(!st.tables.length)seedT();render()}})();
+</script></body></html>
