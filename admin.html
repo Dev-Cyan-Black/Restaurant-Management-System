@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABC — Manager Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ffffff;--panel:#f6f8fa;--ink:#15212c;--mute:#5d6b79;--line:#dfe4ea;--side:#14263a;--side2:#d5dfe9;--brass:#9c7f3c;--red:#9b3a34;--ok:#2f6b50;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media not all{:root:not([data-theme="light"]){--bg:#0d1721;--panel:#15222e;--ink:#e6ecf1;--mute:#97a6b4;--line:#26374a;--side:#08111a;--brass:#c3a45a;--red:#d27269;--ok:#6dbb98}}
+:root[data-theme="dark"]{--bg:#0d1721;--panel:#15222e;--ink:#e6ecf1;--mute:#97a6b4;--line:#26374a;--side:#08111a;--brass:#c3a45a;--red:#d27269;--ok:#6dbb98}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:15px/1.5 "Hanken Grotesk",system-ui,sans-serif}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0;letter-spacing:.2px}
+h1{font-size:2.3rem;line-height:1.1}h2{font-size:1.5rem}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.btn{background:var(--side);color:#f3f5f1;border:0;padding:.55rem 1.1rem;border-radius:3px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.bad{background:var(--red);color:#fff}.btn.sm{padding:.3rem .7rem;font-size:.85rem}
+input,select{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:.5rem .65rem;width:100%}
+label{display:block;color:var(--mute);font-size:.85rem;margin-bottom:.25rem}
+#login{min-height:100vh;display:grid;place-items:center;background:var(--side);padding:1rem}
+.lbox{background:var(--panel);padding:2.6rem 2.2rem;width:min(400px,100%);border-top:3px solid var(--brass)}
+.lbox p{color:var(--mute);margin:.5rem 0 1.4rem}
+#app{display:none;min-height:100vh}
+aside{position:fixed;inset:0 auto 0 0;width:230px;background:var(--side);color:var(--side2);padding:2rem 1.2rem;display:flex;flex-direction:column;gap:.2rem}
+aside .brand{font-family:"Cormorant Garamond",serif;font-size:1.7rem;color:#fff;line-height:1.05;margin-bottom:.2rem}
+aside small{color:#9db1a7;margin-bottom:2rem}
+.nav{background:none;border:0;color:inherit;text-align:left;padding:.65rem .8rem;border-left:2px solid transparent;cursor:pointer}
+.nav.on{border-left-color:var(--brass);background:rgba(255,255,255,.07);color:#fff}
+aside .foot{margin-top:auto;display:flex;flex-direction:column;gap:.4rem}
+aside .foot .nav{font-size:.9rem}
+main{margin-left:230px;padding:2.4rem 3rem;max-width:1100px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.8rem}
+.head p{margin:.3rem 0 0;color:var(--mute)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:2rem}
+.kpi{background:var(--panel);padding:1.1rem 1.2rem}
+.kpi span{color:var(--mute);font-size:.85rem}.kpi b{display:block;font:600 2rem "Cormorant Garamond",serif}
+.kpi i{font-style:normal;font-size:.8rem;color:var(--ok)}.kpi i.neg{color:var(--red)}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:2rem}
+.card{background:var(--panel);border:1px solid var(--line);padding:1.3rem 1.4rem;margin-bottom:1.5rem}
+.card h2{margin-bottom:.9rem}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mute);font-weight:500;font-size:.85rem;padding:.5rem .4rem;border-bottom:1px solid var(--line)}
+td{padding:.65rem .4rem;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}.tw{overflow-x:auto}
+.price{width:112px;text-align:right}
+.chart{display:flex;align-items:flex-end;gap:10px;height:160px;border-bottom:1px solid var(--line);padding-top:10px}
+.chart div{flex:1;background:var(--side);opacity:.35;position:relative;min-height:3px}.chart div.cur{background:var(--brass);opacity:1}
+.chart div span{position:absolute;bottom:-1.5rem;left:0;right:0;text-align:center;font-size:.75rem;color:var(--mute)}
+.tag{font-size:.78rem;padding:.1rem .5rem;border:1px solid var(--line);border-radius:20px;color:var(--mute)}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.cat{font-family:"Cormorant Garamond",serif;font-size:1.25rem;margin:1.2rem 0 .2rem;color:var(--brass)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;align-items:end}
+.sw{appearance:none;width:38px;height:20px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;padding:0;border:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}
+.sw:checked{background:var(--ok)}.sw:checked::after{left:20px}
+dialog{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:1.8rem;width:min(420px,92vw)}
+dialog::backdrop{background:rgba(10,20,16,.55)}dialog p{color:var(--mute)}dialog .acts{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem}
+figure{margin:0;border:1px solid var(--line);background:var(--bg)}figcaption{padding:.7rem .8rem;font-size:.85rem;color:var(--mute)}figcaption b{color:var(--ink);font:600 1.2rem "Cormorant Garamond",serif}figcaption label{margin:.4rem .4rem 0 0;display:inline-block;cursor:pointer;color:var(--ink)}figcaption a{color:var(--brass)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem}
+#toast{position:fixed;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));right:1.2rem;background:var(--side);color:#fff;padding:.7rem 1.1rem;border-left:3px solid var(--brass);opacity:0;transition:.2s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+@media (max-width:860px){aside{position:static;width:auto;flex-direction:row;flex-wrap:wrap;padding:1rem}aside small{display:none}aside .brand{width:100%;margin:0}aside .foot{margin:0;flex-direction:row}.nav{border-left:0;border-bottom:2px solid transparent;padding:.4rem .6rem}.nav.on{border-bottom-color:var(--brass)}main{margin:0;padding:1.4rem 1rem}.grid2{grid-template-columns:1fr}}
+@media print{aside,.noprint{display:none!important}main{margin:0;padding:0}body{background:#fff}}
+</style></head><body>
+
+<section id="login"><form class="lbox" onsubmit="return login(event)">
+<h1>ABC</h1><p>Halal fast food. Sign in to manage the menu, your team and daily reports.</p>
+<label for="pin">Manager passcode</label><input id="pin" type="password" autocomplete="current-password" autofocus>
+<p id="err" style="color:var(--red);margin:.5rem 0 0;min-height:1.4em"></p>
+<button class="btn" style="width:100%;margin-top:.6rem">Sign in</button>
+<p style="font-size:.8rem;margin:1rem 0 0">Signed-in managers go straight in.</p>
+</form></section>
+
+<div id="app">
+<aside><div class="brand">ABC</div><small>Halal kitchen · Manager console</small>
+<button class="nav on" data-v="dash">Today</button>
+<button class="nav" data-v="menu">Menu &amp; prices</button>
+<button class="nav" data-v="staff">Staff</button>
+<button class="nav" data-v="roster">Shift roster</button>
+<button class="nav" data-v="reports">Daily reports</button>
+<div class="foot"><button class="nav" id="theme">Switch theme</button><button class="nav" id="out">Sign out</button></div></aside>
+<main id="main"></main></div>
+
+<dialog id="dlg"><h2 id="dt"></h2><p id="dp"></p><div class="acts"><button class="btn ghost" onclick="dlg.close()">Cancel</button><button class="btn bad" id="dok"></button></div></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s),money=n=>"₦"+Math.round(n).toLocaleString("en-NG"),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NEW=[{id:14,c:"Rice dishes",n:"Jollof rice & grilled chicken",p:6500,k:2600,on:1},{id:15,c:"Rice dishes",n:"Fried rice & beef",p:6000,k:2400,on:1},
+{id:16,c:"Swallow & soups",n:"Pounded yam & egusi soup",p:7500,k:3000,on:1},{id:17,c:"Swallow & soups",n:"Amala, ewedu & gbegiri",p:6500,k:2400,on:1},{id:18,c:"Swallow & soups",n:"Goat meat pepper soup",p:6000,k:2300,on:1},
+{id:19,c:"Grills",n:"Beef suya platter",p:5500,k:2200,on:1},{id:20,c:"Grills",n:"Grilled tilapia & plantain",p:9000,k:3800,on:1},{id:21,c:"Sides",n:"Moi moi",p:1500,k:500,on:1}];
+const defaults={ngn:3,menu:[
+{id:1,c:"Burgers",n:"Classic beef burger",p:4500,k:1800,on:1},
+{id:2,c:"Burgers",n:"Double cheese burger",p:6500,k:2700,on:1},
+{id:3,c:"Burgers",n:"Spicy chicken burger",p:5000,k:2000,on:1},
+{id:4,c:"Shawarma",n:"Chicken shawarma",p:3500,k:1400,on:1},
+{id:5,c:"Shawarma",n:"Beef shawarma",p:4000,k:1700,on:1},
+{id:6,c:"Chicken & sides",n:"Fried chicken, 2 pieces",p:4500,k:1900,on:1},
+{id:7,c:"Chicken & sides",n:"Chicken wings, 6 pieces",p:4000,k:1600,on:1},
+{id:8,c:"Chicken & sides",n:"Crispy fries",p:2000,k:600,on:1},
+{id:9,c:"Pizza",n:"Chicken pizza, medium",p:8500,k:3200,on:1},
+{id:10,c:"Drinks",n:"Zobo",p:1500,k:400,on:1},
+{id:11,c:"Drinks",n:"Chapman (non-alcoholic)",p:2000,k:600,on:1},
+{id:12,c:"Drinks",n:"Chocolate milkshake",p:3000,k:1000,on:1},
+{id:13,c:"Drinks",n:"Bottled water",p:500,k:150,on:1}].concat(NEW),
+staff:[{id:1,n:"Aisha",r:"Head chef",w:4500,s:"2022-03-12"},{id:2,n:"Abdallah",r:"Floor supervisor",w:3000,s:"2022-09-15"},{id:3,n:"Adisa",r:"Grill cook",w:2200,s:"2023-02-20"},{id:4,n:"Fatima",r:"Cashier",w:2000,s:"2024-01-08"}],
+past:[]};
+const norm=d=>{if((d.ngn||0)<2)Object.assign(d,JSON.parse(JSON.stringify(defaults)));if(d.ngn===2){NEW.forEach(x=>{if(!d.menu.some(m=>m.n===x.n))d.menu.push({...x,id:Math.max(...d.menu.map(m=>m.id))+1})});d.ngn=3}d.roster=d.roster||{};d.menu.forEach(m=>{if(m.k==null)m.k=Math.round(m.p*.3*2)/2});return d};
+let S;try{S=norm(JSON.parse(localStorage.getItem("ma_state"))||defaults)}catch(e){S=norm(defaults)}
+let DB=null,USER=null,cur="dash";
+const save=()=>{try{localStorage.setItem("ma_state",JSON.stringify(S))}catch(e){}if(DB)DB.doc("state/main").set(JSON.parse(JSON.stringify(S))).catch(()=>toast("Sync failed — saved on this device only"))};
+const SH={O:["Off",0],L:["Lunch",5],D:["Dinner",6],B:["Double",11]},DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],shift=(id,d)=>(S.roster[id]||"DDDDDDO")[d]||"O",hrs=(s,d)=>SH[shift(s.id,d)][1];
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2200)}
+function confirmBox(t,p,b,fn){$("#dt").textContent=t;$("#dp").textContent=p;$("#dok").textContent=b;$("#dok").onclick=()=>{dlg.close();fn()};dlg.showModal()}
+const dlg=$("#dlg");
+
+// Daily figures: seeded so each date shows consistent sample data. Replace with your till/POS feed.
+function rnd(seed){let x=Math.sin(seed)*10000;return x-Math.floor(x)}
+function dayKey(o){const d=new Date();d.setDate(d.getDate()-o);return d.toISOString().slice(0,10)}
+function report(key){const seed=+key.replace(/-/g,"")%100000,dow=new Date(key).getDay(),wk=(dow===5||dow===6)?1.35:dow===0?1.1:.85;
+ const covers=Math.round((70+rnd(seed)*40)*wk),items=S.menu.filter(m=>m.on),ratio=items.reduce((a,m)=>a+m.k,0)/items.reduce((a,m)=>a+m.p,0),wi=(dow+6)%7,avg=items.reduce((a,m)=>a+m.p,0)/items.length;
+ const rev=Math.round(covers*(avg*2.1+rnd(seed+1)*8)),labour=Math.round(S.staff.reduce((a,s)=>a+s.w*hrs(s,wi),0)),food=Math.round(rev*(ratio+(rnd(seed+2)-.5)*.04));
+ const top=items.map((m,i)=>({n:m.n,q:Math.round(covers*(.1+rnd(seed+i+3)*.35))})).sort((a,b)=>b.q-a.q).slice(0,5);
+ return{key,covers,rev,avg:rev/covers,labour,food,net:rev-labour-food,top}}
+const fmtDate=k=>new Date(k).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+
+const V={
+dash(){const r=report(dayKey(0)),y=report(dayKey(1)),dl=(a,b)=>{const d=(a/b-1)*100;return`<i class="${d<0?"neg":""}">${d>=0?"+":""}${d.toFixed(1)}% vs yesterday</i>`};
+ const wk=[6,5,4,3,2,1,0].map(o=>report(dayKey(o))),mx=Math.max(...wk.map(w=>w.rev));
+ return`<div class="head"><div><h1>Good day, Manager</h1><p>${fmtDate(dayKey(0))}</p></div><button class="btn noprint" onclick="go('reports')">Open full report</button></div>
+ <div class="kpis"><div class="kpi"><span>Revenue</span><b>${money(r.rev)}</b>${dl(r.rev,y.rev)}</div><div class="kpi"><span>Covers</span><b>${r.covers}</b>${dl(r.covers,y.covers)}</div>
+ <div class="kpi"><span>Average spend</span><b>${money(r.avg)}</b>${dl(r.avg,y.avg)}</div><div class="kpi"><span>Net after costs</span><b>${money(r.net)}</b><i>${(r.net/r.rev*100).toFixed(0)}% margin</i></div></div>
+ <div class="grid2"><div class="card"><h2>Revenue, last 7 days</h2><div class="chart" style="margin-bottom:2rem">${wk.map((w,i)=>`<div class="${i==6?"cur":""}" style="height:${w.rev/mx*100}%" title="${money(w.rev)}"><span>${new Date(w.key).toLocaleDateString("en-GB",{weekday:"short"})}</span></div>`).join("")}</div></div>
+ <div class="card"><h2>Best sellers today</h2><table>${r.top.map(t=>`<tr><td>${esc(t.n)}</td><td class="r">${t.q}</td></tr>`).join("")}</table></div></div>
+ <div class="card"><h2>At a glance</h2><p style="margin:0;color:var(--mute)">${S.staff.length} team members · ${S.menu.filter(m=>m.on).length} dishes on sale · ${S.menu.filter(m=>!m.on).length} hidden from the menu.</p></div>`},
+
+menu(){const cats=[...new Set(S.menu.map(m=>m.c))];
+ return`<div class="head"><div><h1>Menu &amp; prices</h1><p>Change a price or cost and it saves when you leave the field. Margin turns red below 60%.</p></div></div>
+ <div class="card"><h2>Menu pictures</h2><input id="q" type="search" placeholder="Search a dish, e.g. burger — or browse all below" oninput="srch(this.value)" aria-label="Search dishes" style="margin-bottom:1rem"><div id="res"></div></div>
+ <div class="card noprint"><h2>Add a dish</h2><form class="form" onsubmit="return addDish(event)">
+ <div style="grid-column:span 2"><label>Dish name</label><input id="nn" name="n" required></div><div><label>Section</label><input name="c" list="cl" required placeholder="e.g. Mains"><datalist id="cl">${cats.map(c=>`<option>${esc(c)}`).join("")}</datalist></div>
+ <div><label>Cost to make (₦)</label><input name="k" type="number" min="0" step="50" required></div><div><label>Price (₦)</label><input name="p" type="number" min="0" step="100" required></div><button class="btn">Add dish</button></form></div>
+ <div class="card tw">${cats.map(c=>`<div class="cat">${esc(c)}</div><table><tr><th>Dish</th><th class="r">Cost</th><th class="r">Price</th><th class="r">Margin</th><th class="r">On sale</th><th></th></tr>${S.menu.filter(m=>m.c===c).map(m=>`<tr>
+ <td><input value="${esc(m.n)}" aria-label="Dish name" onchange="upd(${m.id},'n',this.value)" style="border-color:transparent;background:transparent"></td>
+ <td class="r"><input class="price" type="number" min="0" step="50" value="${m.k}" aria-label="Cost of ${esc(m.n)}" onchange="upd(${m.id},'k',+this.value)"></td>
+ <td class="r"><input class="price" type="number" min="0" step="100" value="${m.p}" aria-label="Price for ${esc(m.n)}" onchange="upd(${m.id},'p',+this.value)"></td>
+ <td class="r" style="color:var(${(m.p-m.k)/m.p<.6?"--red":"--ok"})">${m.p?Math.round((m.p-m.k)/m.p*100):0}%</td>
+ <td class="r"><input type="checkbox" class="sw" ${m.on?"checked":""} aria-label="On sale" onchange="upd(${m.id},'on',this.checked?1:0)"></td>
+ <td class="r"><button class="btn ghost sm" onclick="delDish(${m.id})">Remove</button></td></tr>`).join("")}</table>`).join("")||"<p>The menu is empty. Add your first dish above.</p>"}</div>`},
+
+staff(){const wages=S.staff.reduce((a,s)=>a+s.w*DAYS.reduce((t,_,d)=>t+hrs(s,d),0),0);
+ return`<div class="head"><div><h1>Staff</h1><p>${S.staff.length} on the team · ${money(wages)} in wages this week at current shifts</p></div></div>
+ <div class="card noprint"><h2>Hire a team member</h2><form class="form" onsubmit="return hire(event)">
+ <div><label>Full name</label><input name="n" required></div><div><label>Role</label><select name="r"><option>Cashier<option>Grill cook<option>Fry cook<option>Shawarma maker<option>Delivery rider<option>Cleaner<option>Floor supervisor</select></div>
+ <div><label>Hourly wage (₦)</label><input name="w" type="number" min="1" step="100" required></div><div><label>Start date</label><input name="s" type="date" value="${dayKey(0)}" required></div><button class="btn">Hire</button></form></div>
+ <div class="card tw"><h2>Current team</h2><table><tr><th>Name</th><th>Role</th><th>Started</th><th class="r">Wage / hr</th><th></th></tr>
+ ${S.staff.map(s=>`<tr><td>${esc(s.n)}</td><td><input value="${esc(s.r)}" aria-label="Role" onchange="updS(${s.id},'r',this.value)" style="border-color:transparent;background:transparent"></td><td>${s.s}</td><td class="r"><input class="price" type="number" min="1" step="100" value="${s.w}" aria-label="Hourly wage" onchange="updS(${s.id},'w',+this.value)"></td><td class="r"><button class="btn bad sm" onclick="fire(${s.id})">Dismiss</button></td></tr>`).join("")||"<tr><td>No staff yet. Hire your first team member above.</td></tr>"}</table></div>
+ ${S.past.length?`<div class="card tw"><h2>Former staff</h2><table><tr><th>Name</th><th>Role</th><th>Left</th></tr>${S.past.map(s=>`<tr><td>${esc(s.n)}</td><td>${esc(s.r)}</td><td>${s.left}</td></tr>`).join("")}</table></div>`:""}`},
+
+roster(){const tot=DAYS.map((_,d)=>S.staff.reduce((a,s)=>a+s.w*hrs(s,d),0));
+ return`<div class="head"><div><h1>Shift roster</h1><p>Plan the week. Shifts feed straight into daily labour cost.</p></div></div>
+ <div class="card tw"><table><tr><th>Team member</th>${DAYS.map(d=>`<th>${d}</th>`).join("")}</tr>
+ ${S.staff.map(s=>`<tr><td>${esc(s.n)}<br><span style="color:var(--mute);font-size:.8rem">${esc(s.r)}</span></td>${DAYS.map((_,d)=>`<td><select aria-label="${esc(s.n)} ${DAYS[d]}" onchange="setShift(${s.id},${d},this.value)" style="padding:.3rem">${Object.entries(SH).map(([k,v])=>`<option value="${k}" ${shift(s.id,d)===k?"selected":""}>${v[0]}</option>`).join("")}</select></td>`).join("")}</tr>`).join("")||"<tr><td>No staff to schedule yet.</td></tr>"}
+ <tr><td><b>Labour cost</b></td>${tot.map(t=>`<td><b>${money(t)}</b></td>`).join("")}</tr></table>
+ <p style="color:var(--mute);font-size:.85rem">Lunch is 5 hours, dinner 6, a double 11. Week total: <b>${money(tot.reduce((a,b)=>a+b,0))}</b></p></div>`},
+reports(){const k=V.rk||dayKey(0),r=report(k);
+ return`<div class="head"><div><h1>Daily report</h1><p>${fmtDate(k)}</p></div><div class="noprint" style="display:flex;gap:.6rem;align-items:end"><div><label for="rd">Choose a date</label><input id="rd" type="date" value="${k}" max="${dayKey(0)}" onchange="V.rk=this.value;go('reports')"></div><button class="btn ghost" onclick="csv()">Download CSV</button><button class="btn" onclick="print()">Print report</button></div></div>
+ <div class="kpis"><div class="kpi"><span>Revenue</span><b>${money(r.rev)}</b></div><div class="kpi"><span>Covers</span><b>${r.covers}</b></div><div class="kpi"><span>Average spend</span><b>${money(r.avg)}</b></div></div>
+ <div class="grid2"><div class="card"><h2>Profit and loss</h2><table>
+ <tr><td>Sales</td><td class="r">${money(r.rev)}</td></tr><tr><td>Food &amp; drink cost</td><td class="r">−${money(r.food)}</td></tr><tr><td>Labour (${S.staff.filter(s=>hrs(s,(new Date(k).getDay()+6)%7)).length} rostered)</td><td class="r">−${money(r.labour)}</td></tr>
+ <tr><td><b>Net for the day</b></td><td class="r"><b>${money(r.net)}</b></td></tr></table></div>
+ <div class="card"><h2>Top dishes</h2><table>${r.top.map(t=>`<tr><td>${esc(t.n)}</td><td class="r">${t.q} sold</td></tr>`).join("")}</table></div></div>
+ <p class="noprint" style="color:var(--mute);font-size:.85rem">Figures are sample data generated for this demo. Connect your till or POS to show real sales.</p>`}};
+
+const PH=(()=>{try{return JSON.parse(localStorage.getItem("ma_ph2"))||{}}catch(e){return{}}})();
+function pic(m,z){if(PH[m.id])return`<img src="${PH[m.id]}" alt="${esc(m.n)}" style="width:100%;height:${z}px;object-fit:cover;display:block">`;
+ return art(m,z)}
+function art(m,z){const n=m.n.toLowerCase(),B=(y,c)=>`<rect x="52" y="${y}" width="96" height="9" rx="4.5" fill="${c}"/>`;let g;
+ if(/burger/.test(n)){const sp=/spicy/.test(n),dbl=/double/.test(n),pc=sp?"#c4822f":"#5a3420";
+  g=`<ellipse cx="100" cy="92" rx="62" ry="8" fill="#f4f1ea"/><rect x="56" y="76" width="88" height="13" rx="6.5" fill="#d9993f"/>${B(66,pc)}${dbl?B(56,pc)+`<polygon points="54,56 146,56 138,63 120,63 112,70 104,63 60,63" fill="#f2b632"/>`:""}<polygon points="54,${dbl?66:66} 146,66 140,73 122,73 114,80 106,73 60,73" fill="#f2b632"/><path d="M54 ${dbl?55:64}q8 6 16 0t16 0 16 0 16 0 16 0 16 0" stroke="#6fae3a" stroke-width="6" fill="none" transform="translate(0 ${dbl?-4:-6})"/><rect x="62" y="${dbl?44:50}" width="76" height="6" rx="3" fill="#d2402f"/>${sp?`<path d="M64 ${dbl?44:50}q36 10 72 0" stroke="#b3261e" stroke-width="3" fill="none"/>`:""}<path d="M56 ${dbl?44:50}q0-${dbl?28:30} 44-${dbl?28:30}t44 ${dbl?28:30}z" fill="#e0a04a"/><g fill="#fbe8b8"><ellipse cx="82" cy="${dbl?24:22}" rx="3" ry="1.6"/><ellipse cx="100" cy="${dbl?19:17}" rx="3" ry="1.6"/><ellipse cx="118" cy="${dbl?24:22}" rx="3" ry="1.6"/><ellipse cx="92" cy="${dbl?31:29}" rx="3" ry="1.6"/><ellipse cx="110" cy="${dbl?31:29}" rx="3" ry="1.6"/></g>`}
+ else if(/shawarma/.test(n)){const f=/beef/.test(n)?"#7a4a2c":"#d9b36a";
+  g=`<polygon points="72,98 112,38 134,50 100,100" fill="#c9ced4"/><path d="M104 28q22-8 34 14L112 62 96 42z" fill="${f}"/><path d="M100 40q8-18 26-10" stroke="#6fae3a" stroke-width="6" fill="none"/><path d="M112 62L74 98q-8-22 8-44l22-18z" fill="#ecd0a0"/><path d="M80 70l30-34" stroke="#d3b27c" stroke-width="3"/><circle cx="118" cy="42" r="3" fill="#d2402f"/><circle cx="108" cy="36" r="2.4" fill="#d2402f"/>`}
+ else if(/wings/.test(n)){g=`<ellipse cx="100" cy="88" rx="66" ry="10" fill="#f4f1ea"/>`+[[68,76,-20],[92,70,10],[116,74,-8],[80,86,25],[104,86,-18],[130,84,14]].map(([x,y,r])=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="17" ry="9" fill="#c9702a"/><ellipse cx="${x-3}" cy="${y-2}" rx="9" ry="3" fill="#e69a45" opacity=".8"/><rect x="${x+14}" y="${y-2}" width="8" height="4" rx="2" fill="#f3e9d6"/></g>`).join("")+`<g fill="#6fae3a"><circle cx="150" cy="70" r="3"/><circle cx="52" cy="80" r="2.6"/></g>`}
+ else if(/pizza/.test(n)){g=`<ellipse cx="100" cy="64" rx="62" ry="40" fill="#d99a48"/><ellipse cx="100" cy="64" rx="55" ry="34" fill="#f0bd4f"/><g fill="#a8321f"><circle cx="78" cy="58" r="7"/><circle cx="104" cy="50" r="7"/><circle cx="126" cy="66" r="7"/><circle cx="92" cy="78" r="7"/><circle cx="68" cy="72" r="5"/></g><g fill="#5f9a36"><circle cx="112" cy="68" r="3"/><circle cx="84" cy="48" r="3"/><circle cx="132" cy="52" r="3"/></g><path d="M100 64L100 26M100 64L152 52M100 64L60 90" stroke="#d99a48" stroke-width="1.5"/>`}
+ else if(/fries/.test(n)){g=`<g fill="#f2c24a">`+[[70,34,-8],[80,26,-4],[90,30,0],[100,22,3],[110,28,6],[120,32,9],[128,40,12]].map(([x,y,r])=>`<rect x="${x}" y="${y}" width="9" height="56" rx="2" transform="rotate(${r} ${x+4} 86)"/>`).join("")+`</g><path d="M66 62h68l-8 38H74z" fill="#c8362b"/><path d="M80 78q20-8 40 0" stroke="#f6d36b" stroke-width="5" fill="none"/>`}
+ else if(/fried chicken/.test(n)){g=`<ellipse cx="100" cy="94" rx="64" ry="9" fill="#f4f1ea"/>`+[[78,-24],[118,24]].map(([x,r])=>`<g transform="rotate(${r} ${x} 66)"><rect x="${x-5}" y="${r<0?78:78}" width="10" height="16" rx="4" fill="#f3e9d6"/><path d="M${x-18} 66q0-34 18-34t18 34q0 16-18 16t-18-16z" fill="#c9702a"/><path d="M${x-10} 50q10-12 20 0" stroke="#e8a24e" stroke-width="4" fill="none"/><g fill="#8e4a17"><circle cx="${x-8}" cy="62" r="2"/><circle cx="${x+7}" cy="56" r="2"/><circle cx="${x+2}" cy="70" r="2"/></g></g>`).join("")}
+ else if(/zobo|chapman|milkshake|water/.test(n)){const w=/water/.test(n),c=/zobo/.test(n)?"#8b1a3a":/chapman/.test(n)?"#e4572e":"#7a4a32";
+  g=w?`<rect x="93" y="12" width="14" height="22" rx="3" fill="#bfe3f2"/><rect x="91" y="8" width="18" height="8" rx="2" fill="#2d6fb0"/><rect x="82" y="30" width="36" height="66" rx="12" fill="#bfe3f2" opacity=".85"/><rect x="82" y="52" width="36" height="22" fill="#2d6fb0" opacity=".7"/>`:`<path d="M78 26h44l-6 68a6 6 0 0 1-6 5H90a6 6 0 0 1-6-5z" fill="#fff" opacity=".2"/><path d="M81 46h38l-4 48a5 5 0 0 1-5 4H90a5 5 0 0 1-5-4z" fill="${c}"/><line x1="108" y1="12" x2="98" y2="72" stroke="#fff" stroke-width="3"/>${/milk/.test(n)?`<ellipse cx="100" cy="42" rx="21" ry="9" fill="#f6e8da"/><circle cx="100" cy="34" r="5" fill="#b3261e"/>`:""}${/chapman/.test(n)?`<circle cx="121" cy="30" r="11" fill="#7fb04a"/><circle cx="121" cy="30" r="7" fill="#cfe8a8"/>`:""}`}
+ else if(/rice/.test(n)){const j=/jollof/.test(n);
+  g=`<ellipse cx="100" cy="94" rx="68" ry="9" fill="#f4f1ea"/><path d="M44 90q6-42 46-42t46 42z" fill="${j?"#d4561f":"#d8b45a"}"/><g fill="${j?"#f08a4b":"#6fae3a"}"><circle cx="70" cy="76" r="2.4"/><circle cx="92" cy="66" r="2.4"/><circle cx="108" cy="78" r="2.4"/><circle cx="82" cy="84" r="2.4"/></g><g fill="${j?"#9a3a12":"#e0782a"}"><circle cx="100" cy="68" r="2.2"/><circle cx="64" cy="86" r="2.2"/><circle cx="116" cy="84" r="2.2"/></g><g transform="rotate(-14 140 80)"><ellipse cx="140" cy="80" rx="24" ry="13" fill="${j?"#b9702a":"#7a3f1c"}"/><path d="M124 78h32M126 84h28" stroke="#4a2410" stroke-width="2"/></g>`}
+ else if(/soup|amala/.test(n)){const sw=/yam/.test(n)?"#f4efe0":/amala/.test(n)?"#4a2f1e":null,br=/egusi/.test(n)?"#8a9a2e":/ewedu|amala/.test(n)?"#3f7a2c":"#a34a1c",cx=sw?128:100,w=sw?35:45,y=sw?56:52;
+  g=`<ellipse cx="100" cy="96" rx="70" ry="8" fill="#f4f1ea"/>${sw?`<ellipse cx="62" cy="82" rx="28" ry="19" fill="${sw}"/><ellipse cx="56" cy="74" rx="14" ry="6" fill="#fff" opacity=".25"/>`:""}<path d="M${cx-w} ${y}h${w*2}a${w} ${w*.9} 0 0 1-${w*2} 0z" fill="#f0ece4"/><ellipse cx="${cx}" cy="${y}" rx="${w}" ry="7" fill="${br}"/><g fill="#6b2a10"><ellipse cx="${cx-10}" cy="${y}" rx="6" ry="3"/><ellipse cx="${cx+12}" cy="${y+1}" rx="5" ry="2.6"/></g>`}
+ else if(/suya/.test(n)){g=`<ellipse cx="100" cy="98" rx="68" ry="7" fill="#f4f1ea"/><g transform="rotate(-22 100 60)">`+[-20,0,20].map(dy=>`<g transform="translate(0 ${dy})"><line x1="26" y1="60" x2="174" y2="60" stroke="#d8c08a" stroke-width="2.4"/>`+[0,1,2,3,4].map(i=>`<ellipse cx="${58+i*21}" cy="60" rx="10" ry="8" fill="#9a4a1e"/><circle cx="${55+i*21}" cy="58" r="1.8" fill="#e05a2a"/>`).join("")+`</g>`).join("")+`</g><g fill="none" stroke="#b3405a" stroke-width="2"><circle cx="160" cy="92" r="7"/><circle cx="46" cy="92" r="6"/></g>`}
+ else if(/tilapia|fish/.test(n)){g=`<ellipse cx="100" cy="98" rx="70" ry="7" fill="#f4f1ea"/><path d="M42 64Q78 34 122 54L152 40V84L122 70Q78 92 42 64Z" fill="#b9873f"/><path d="M78 48l10 30M96 46l10 32M114 52l8 22" stroke="#6b4519" stroke-width="3"/><circle cx="56" cy="62" r="3.4" fill="#fff"/><circle cx="56" cy="62" r="1.6" fill="#222"/><g transform="rotate(-18 60 92)"><rect x="40" y="86" width="40" height="11" rx="5.5" fill="#e8b230"/><path d="M48 91h24" stroke="#8a5a10" stroke-width="2"/></g><circle cx="166" cy="88" r="11" fill="#f2d230"/><circle cx="166" cy="88" r="7" fill="#f8e98a"/>`}
+ else if(/moi/.test(n)){g=`<ellipse cx="100" cy="98" rx="68" ry="7" fill="#f4f1ea"/><path d="M40 90q30-18 60-4t60-4q-30 20-60 6t-60 2z" fill="#4f8a35"/><ellipse cx="76" cy="76" rx="27" ry="17" fill="#e4a24a"/><ellipse cx="76" cy="69" rx="23" ry="10" fill="#f0c273"/><ellipse cx="126" cy="76" rx="27" ry="17" fill="#e4a24a"/><ellipse cx="126" cy="69" rx="23" ry="10" fill="#f0c273"/><ellipse cx="126" cy="69" rx="8" ry="5" fill="#fff"/><circle cx="126" cy="69" r="3" fill="#f2b632"/><g fill="#7a3a1a"><circle cx="66" cy="68" r="2"/><circle cx="84" cy="72" r="2"/></g>`}
+ else{const h=[...m.n].reduce((a,c)=>a+c.charCodeAt(0),0)%360;g=`<circle cx="100" cy="62" r="46" fill="#fbfbf8"/><circle cx="100" cy="62" r="21" fill="hsl(${h} 45% 42%)"/>`}
+ return`<svg viewBox="0 0 200 120" style="width:100%;height:${z}px;display:block" role="img" aria-label="${esc(m.n)}"><defs><radialGradient id="g${m.id}" cx=".5" cy=".4" r=".85"><stop offset="0" stop-color="#40586f"/><stop offset="1" stop-color="#15202c"/></radialGradient></defs><rect width="200" height="120" fill="url(#g${m.id})"/><ellipse cx="100" cy="102" rx="64" ry="8" fill="#000" opacity=".35"/>${g}</svg>`}
+function srch(v){const q=v.trim().toLowerCase(),el=$("#res");if(!el)return;
+ 
+ const r=S.menu.filter(m=>m.n.toLowerCase().includes(q));
+ el.innerHTML=r.length?`<div class="gal">${r.map(m=>`<figure>${pic(m,170)}<figcaption><b>${esc(m.n)}</b><br>${esc(m.c)} · ${money(m.p)}<br><label class="btn ghost sm">${PH[m.id]?"Change photo":"Add photo"}<input type="file" accept="image/*" hidden onchange="photo(${m.id},this.files[0])"></label><a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(m.n)}" target="_blank" rel="noopener">Find photos online</a></figcaption></figure>`).join("")}</div>`:`<p style="margin:0">No dish called “${esc(v)}” on the menu. <button class="btn sm" data-n="${esc(v.trim())}" onclick="prefill(this.dataset.n)">Add it as a new dish</button></p>`}
+function prefill(n){const i=$("#nn");i.value=n;i.scrollIntoView({block:"center"});i.focus()}
+function photo(id,f){if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const w=Math.min(480,im.width),c=document.createElement("canvas");c.width=w;c.height=im.height*w/im.width;c.getContext("2d").drawImage(im,0,0,c.width,c.height);PH[id]=c.toDataURL("image/jpeg",.7);URL.revokeObjectURL(u);try{localStorage.setItem("ma_ph2",JSON.stringify(PH))}catch(e){}if(DB)DB.doc("p2/"+id).set({d:PH[id]}).catch(()=>{});srch($("#q").value);toast("Photo saved")};im.src=u}
+function setShift(id,d,v){const a=(S.roster[id]||"DDDDDDO").split("");a[d]=v;S.roster[id]=a.join("");save();go("roster");toast("Shift saved")}
+function updS(id,f,v){if(!v)return;S.staff.find(x=>x.id===id)[f]=v;save();toast("Staff details saved");if(f==="w")go("staff")}
+async function csv(){const r=report(V.rk||dayKey(0)),rows=[["Date",r.key],["Revenue",r.rev],["Covers",r.covers],["Average spend",r.avg.toFixed(2)],["Food cost",r.food],["Labour",r.labour],["Net",r.net],[],["Top dish","Sold"],...r.top.map(t=>[t.n,t.q])];
+ try{const D=await claude.use("downloads");if(!D)throw 0;await D.save({filename:"report-"+r.key+".csv",data:rows.map(x=>x.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n")});toast("Report saved")}catch(e){toast("Download isn't available here. Use Print report instead.")}}
+function enter(){$("#login").style.display="none";$("#app").style.display="block";go(cur)}
+function go(v){cur=v;document.querySelectorAll(".nav[data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===v));$("#main").innerHTML=V[v]();if(v==="menu")srch("");scrollTo(0,0)}
+const nid=a=>a.reduce((m,x)=>Math.max(m,x.id),0)+1;
+function upd(id,f,v){const m=S.menu.find(x=>x.id===id);if(f==="n"&&!v.trim())return;m[f]=v;save();toast(f==="p"?"Price saved":"Menu updated");if(f!=="n")go("menu")}
+function addDish(e){e.preventDefault();const f=new FormData(e.target);S.menu.push({id:nid(S.menu),c:f.get("c").trim(),n:f.get("n").trim(),p:+f.get("p"),k:+f.get("k"),on:1});save();go("menu");toast("Dish added");return false}
+function delDish(id){const m=S.menu.find(x=>x.id===id);confirmBox("Remove this dish?",`${m.n} will be deleted from the menu. To keep it, switch it off instead.`,"Remove dish",()=>{S.menu=S.menu.filter(x=>x.id!==id);save();go("menu");toast("Dish removed")})}
+function hire(e){e.preventDefault();const f=new FormData(e.target);S.staff.push({id:nid(S.staff.concat(S.past)),n:f.get("n").trim(),r:f.get("r"),w:+f.get("w"),s:f.get("s")});save();go("staff");toast("Team member hired");return false}
+function fire(id){const s=S.staff.find(x=>x.id===id);confirmBox("Dismiss "+s.n+"?",`${s.n} will be removed from the active roster and moved to former staff.`,"Dismiss",()=>{S.staff=S.staff.filter(x=>x.id!==id);S.past.unshift({...s,left:dayKey(0)});save();go("staff");toast("Staff member dismissed")})}
+function login(e){e.preventDefault();if(USER){$("#err").textContent="Sign in with the manager's account to continue."}else if($("#pin").value==="aurelia"){try{sessionStorage.setItem("ma_in","1")}catch(x){}enter()}else{$("#err").textContent="That passcode is incorrect. Try again."}return false}
+document.querySelectorAll(".nav[data-v]").forEach(b=>b.onclick=()=>go(b.dataset.v));
+$("#out").onclick=()=>{try{sessionStorage.removeItem("ma_in")}catch(x){}$("#app").style.display="none";$("#login").style.display="grid";$("#pin").value=""};
+$("#theme").onclick=()=>{const r=document.documentElement,d=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"};
+(async()=>{try{USER=await claude.use("user");DB=await claude.use("db")}catch(e){}
+ if(USER){if(await USER.isOwner()){if(DB){try{const d=await DB.doc("state/main").get();if(d.exists)S=norm(d.data());else save()}catch(e){DB=null}}if(DB)await Promise.all(S.menu.map(async m=>{try{const d=await DB.doc('p2/'+m.id).get();if(d.exists&&d.data().d)PH[m.id]=d.data().d}catch(e){}}));enter()}else $(".lbox").innerHTML="<h1>Managers only</h1><p>This console is private to the restaurant manager. Ask them to share access if you need it.</p>"}
+ else try{if(sessionStorage.getItem("ma_in"))enter()}catch(e){}})();
+</script></body></html>
